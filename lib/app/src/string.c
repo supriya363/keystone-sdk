@@ -2,6 +2,35 @@
 #include <stdint.h>
 #include <ctype.h>
 
+char* strcpy(char dest[], const char source[])
+{
+    int i = 0;
+    while (1)
+    {
+        dest[i] = source[i];
+
+        if (dest[i] == '\0')
+        {
+            break;
+        }
+
+        i++;
+    }
+    return dest;
+}
+
+int tolower(int c)
+{
+  if(c<= 90 && c>=65)
+  {
+    return c+32;
+  }
+  else
+  {
+    return c;
+  }
+}
+
 void* memcpy(void* dest, const void* src, size_t len)
 {
   const char* s = src;
@@ -21,7 +50,7 @@ void* memcpy(void* dest, const void* src, size_t len)
   return dest;
 }
 
-size_t strlen(char* str){
+size_t strlen(const char* str){
   size_t len = 0;
   while(*str != '\0'){
     str++;
@@ -70,7 +99,7 @@ int memcmp(const void* s1, const void* s2, size_t n)
  * @dest: Where to copy to
  * @src: Where to copy from
  * @count: The size of the area.
- * 
+ *
  * Unlike memcpy(), memmove() copes with overlapping areas.
  */
 void *memmove(void *dest, const void *src, size_t count)
@@ -90,6 +119,33 @@ void *memmove(void *dest, const void *src, size_t count)
     s += count;
     while (count--)
       *--tmp = *--s;
+  }
+  return dest;
+}
+int strcmp(const char *s1, const char *s2)
+{
+  int len= strlen(s1);
+  if(len!=strlen(s2))
+    return 1;
+
+  for(int i=0;i<len;i++)
+  {
+    if(s1[i]!=s2[i])
+      return 1;
+  }
+  return 0;
+}
+
+char* strncpy(char *dest, const char *src, size_t n)
+{
+  size_t i;
+  for (i = 0; i < n && src[i] != '\0'; i++)
+  {
+    dest[i] = src[i];
+  }
+  for ( ; i < n; i++)
+  {
+    dest[i] = '\0';
   }
   return dest;
 }

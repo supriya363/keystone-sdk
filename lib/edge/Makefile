@@ -2,7 +2,7 @@ CC = riscv64-unknown-linux-gnu-gcc
 INCLUDE_DIR = include/
 SRC_DIR = src
 
-OPTIONS_FLAGS+=-DIO_SYSCALL_WRAPPING
+OPTIONS_FLAGS ?=
 
 CCFLAGS = -Wall -Werror -I$(INCLUDE_DIR) $(OPTIONS_FLAGS)
 

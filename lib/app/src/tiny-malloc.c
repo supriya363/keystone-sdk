@@ -55,9 +55,14 @@
 #ifndef MALLOC_DIRECTION
 #define MALLOC_DIRECTION 1
 #endif
+#define OCALL_PRINT_BUFFER 1
+#define OCALL_PRINT_VALUE 2
+#define OCALL_GET_STRING 4
 
 #include <stddef.h>
 #include "string.h"
+#include <syscall.h>
+//#include <stdint.h>
 
 void* malloc(size_t);
 void    free(void*);
@@ -124,11 +129,38 @@ register void * stack_pointer asm ("r15");
    : sz + sizeof (size_t) + M_ALIGN(sz, sizeof (size_t)))
 
 
+
+void check_range_and_call_sbrk(void *addr, size_t sz)
+{
+
+
+  unsigned long cur_sbrk= s_brk(0);
+  //ocall(OCALL_PRINT_VALUE, &cur_sbrk, sizeof(unsigned long), 0, 0,0);
+
+  if( ( (unsigned long)addr + (unsigned long)sz) >cur_sbrk  )
+  {
+    s_brk(    ( (unsigned long)addr + (unsigned long)sz)    -  cur_sbrk   );
+
+
+  }
+
+
+
+  //printf("malloc start = 0x%lx and malloc end = 0x%lx and malloc chunk addr = 0x%lx \n",(unsigned long)__malloc_start, (unsigned long)__malloc_end, (unsigned long)addr );
+}
+
+
+
+
+
+
 void *
 malloc (size_t sz)
 {
+  //printf("[malloc] requested size = %lu\n",sz);
   fle *nextfree;
   fle block;
+  //check_range_and_call_sbrk(0,sz);
 
   /* dkohlbre: Force init of malloc_end, it wasn't always gettng set */
   if(__malloc_end == NULL){
@@ -153,7 +185,10 @@ malloc (size_t sz)
 	  if (block->size < real_size + sizeof (struct freelist_entry))
 	    {
 	      *nextfree = block->next;
-	      return (void *)&block->next;
+	      //return (void *)&block->next;
+        void* malloc_return_addr = (void *)&block->next;   malloc_return_addr=malloc_return_addr;
+        check_range_and_call_sbrk(malloc_return_addr,real_size);
+        return malloc_return_addr;
 	    }
 	  else
 	    {
@@ -206,7 +241,15 @@ malloc (size_t sz)
     }
  done:
   block->size = real_size;
-  return (void *)&block->next;
+
+
+  void* malloc_return_addr = (void *)&block->next;malloc_return_addr=malloc_return_addr;
+
+  check_range_and_call_sbrk(malloc_return_addr,real_size);
+
+  //return (void *)&block->next;
+  return malloc_return_addr;
+  //return 0;
 }
 
 
@@ -281,6 +324,8 @@ realloc (void *block_p, size_t sz)
   old_real_size = block->size;
 
   /* Perhaps we need to allocate more space.  */
+
+
   if (old_real_size < real_size)
     {
       void *result;
@@ -288,12 +333,17 @@ realloc (void *block_p, size_t sz)
 
       /* Need to allocate, copy, and free.  */
       result = malloc (sz);
+
       if (result == NULL)
-	return NULL;
+	        return NULL;
       memcpy (result, block_p, old_size < sz ? old_size : sz);
+      //memcpy (result, block_p, old_size < sz ? old_real_size : sz);
       free (block_p);
       return result;
     }
+
+
+
   /* Perhaps we can free some space.  */
   if (old_real_size - real_size >= sizeof (struct freelist_entry))
     {
@@ -543,6 +593,47 @@ mallinfo (void)
 }
 #endif
 
+//#define DEFINE_MALLOC_STATS 1
+
+//-------------------------------------------------------------------------------
+/*
+void
+malloc_stats(void)
+{
+  struct mallinfo i;
+  FILE *fp;
+
+  //fp = stderr;
+  fp = stdout ;
+
+  i = mallinfo();
+  fprintf (fp, "malloc has reserved %u bytes between %p and %p\n",
+	   i.arena, &__malloc_start, __malloc_end);
+  fprintf (fp, "there are %u bytes free in %u chunks\n",
+	   i.fordblks, i.ordblks);
+  fprintf (fp, "of which %u bytes are at the end of the reserved space\n",
+	   i.keepcost);
+  fprintf (fp, "and %u bytes are in use.\n", i.uordblks);
+}
+*/
+//-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #ifdef DEFINE_MALLOC_STATS
 #include "malloc.h"
 #include <stdio.h>
@@ -553,7 +644,9 @@ malloc_stats(void)
   struct mallinfo i;
   FILE *fp;
 
-  fp = stderr;
+  //fp = stderr;
+  fp = stdout ;
+
   i = mallinfo();
   fprintf (fp, "malloc has reserved %u bytes between %p and %p\n",
 	   i.arena, &__malloc_start, __malloc_end);

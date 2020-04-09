@@ -1,6 +1,6 @@
 OUTPUT_ARCH( "riscv" )
 
-SECTIONS 
+SECTIONS
 {
   . = 0x00001000;
   .text : {
@@ -8,8 +8,8 @@ SECTIONS
     *(.text)
   }
   . = ALIGN(0x1000);
-  .rodata : 
-  { 
+  .rodata :
+  {
     *(.rdata)
     *(.rodata)
   }
@@ -21,7 +21,7 @@ SECTIONS
   .malloc_zone :
   {
     __malloc_start = .;
-    . = . + 4096;
+    . = . +  (1024);
     __malloc_zone_stop = .;
   }
   _end = .;

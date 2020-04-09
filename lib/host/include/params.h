@@ -11,8 +11,8 @@
 #define DEFAULT_UNTRUSTED_PTR   0xffffffff80000000
 #define DEFAULT_UNTRUSTED_SIZE  8192 // 8 KB
 
-#define DEFAULT_STACK_SIZE      1024*16 // 16k
-#define DEFAULT_STACK_START  0x0000000040000000
+#define DEFAULT_STACK_SIZE      (0x20000) // 16k
+#define DEFAULT_STACK_START  0x0000000400000000
 /* parameters for enclave creation */
 class Params
 {
@@ -32,6 +32,7 @@ class Params
     uint64_t getUntrustedMem() { return untrusted; }
     uint64_t getUntrustedSize() { return untrusted_size; }
     uint64_t getFreeMemSize() { return freemem_size; }
+    void setUntrustedSize(uint64_t size) { untrusted_size = size; }
   private:
     bool simulated;
     uint64_t runtime_entry;
