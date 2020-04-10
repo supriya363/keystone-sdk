@@ -5,5 +5,5 @@
 *.a
 *~
 *_entry.h
-examples/hello
+bins/rts/eyrie
 rts/eyrie

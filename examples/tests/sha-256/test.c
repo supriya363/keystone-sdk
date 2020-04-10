@@ -261,7 +261,7 @@ void EAPP_ENTRY eapp_entry()
 
 
 	destruct_binary_messages();
-	ocall(OCALL_PRINT_BUFFER, "SHA-256 done blah", 14, NULL ,0,0);
+	ocall(OCALL_PRINT_BUFFER, "SHA-256 done", 14, NULL ,0,0);
 
 	char* j= (char*)0;
 	*j=*j;
