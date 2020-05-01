@@ -8,47 +8,38 @@
 #include "malloc.h"
 #include "edge_wrapper.h"
 
-int arr[4096];
-
+static int addr_data= 100;
 
 void EAPP_ENTRY eapp_entry(){
 
-  char* msg = "Hello World!\n";
-  char* msg2 = "This is a test message!\n";
+  char* msg = "Hi! This is Supriya Suresh!";
+  unsigned long ret = 1;
+  // char *msg2 = "Address of test_value = ";
+  // char* msg2 = "Hi! This is message 2! Hello World";
+  // edge_data_t pkgstr;
 
   edge_init();
 
-  unsigned long ret = ocall_print_buffer(msg, 24);
-  ocall_print_buffer(msg2, 24);
+  ocall_print_value((  unsigned long )addr_data);
+  // int test_value = 555;
+  ocall_print_buffer (msg, 27);
+  // ocall_print_value_test( (unsigned long) test_value);
+  // ret = ocall_print_buffer(msg, 22);
+  // ocall_print_value((  unsigned long )&addr_data);
+  // unsigned long ret = ocall_print_buffer(msg, 23);
+  
+  // ocall_print_buffer(msg2, 42);
+  // ocall_print_value(ret);
+  // void* host_str = malloc(56);
+  // ocall_get_string(&pkgstr,host_str);
+  // ocall_print_buffer(host_str, pkgstr.size+1);
 
-  ocall_print_value(ret);
-
-  struct edge_data pkgstr;
-  ocall_get_string(&pkgstr);
-
-  void* host_str = malloc(pkgstr.size);
-  copy_from_shared(host_str, pkgstr.offset, pkgstr.size);
-
-  int i;
-  int ct;
-  for(i = 0; i < pkgstr.size; i++){
-    if( ((char*)host_str)[i] == 'l' ){
-      ct++;
-    }
+  int *arr = malloc(2048 * sizeof(int));
+  for(int i=0; i<2048; i++)
+  {
+    ocall_print_value((  unsigned long )i);
+    arr[i] = i;
   }
-  // char *str1 = "&arr[0] = ";
-  // char *str2 = "&arr[4095] = ";
-  // ocall_print_buffer(str1, strlen(str1));
-  // ocall_print_value((unsigned long)&arr[0]);  //0x2060
-  // ocall_print_value((unsigned long)&arr[4096]);  //0x6060
-  // ocall_print_buffer(str2, strlen(str2));
-  ocall_print_value(ct);
-  char* msg3 = "Writing to first page\n";
-  ocall_print_buffer(msg3, strlen(msg3));
-  // arr[0] = 1;
-  // arr[2048] = 1;
-  // arr[3072] = 1;
-  // arr[4096] = 1;
 
 
   EAPP_RETURN(ret);

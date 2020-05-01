@@ -208,6 +208,7 @@ extern uintptr_t copy_waste;
 #define OPAM 2
 #define ENC_PFH 3
 #define RORAM 4
+#define WORAM 5
 
 
 

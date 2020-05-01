@@ -388,7 +388,6 @@ keystone_status_t Keystone::init(const char *eapppath, const char *runtimepath, 
 keystone_status_t Keystone::init(const char *eapppath, const char *runtimepath, Params _params, uintptr_t alternate_phys_addr)
 {
   params = _params;
-  printf("[sdk] keystone init\n");
   if (params.isSimulated()) {
     pMemory = new SimulatedEnclaveMemory();
   } else {
@@ -430,7 +429,6 @@ keystone_status_t Keystone::init(const char *eapppath, const char *runtimepath, 
   }
   hash_enclave.user_paddr = epm_free_list;
   enclp.user_paddr = (data_start - start_addr) + enclp.pt_ptr;
-  printf("[sdk] Here 1\n");
   /* initialize stack. If not using freemem */
 #ifndef USE_FREEMEM
   if( initStack(DEFAULT_STACK_START, DEFAULT_STACK_SIZE, 0) != KEYSTONE_SUCCESS){
@@ -445,11 +443,10 @@ keystone_status_t Keystone::init(const char *eapppath, const char *runtimepath, 
     hash_enclave.utm_paddr = utm_free_list;
   } else {
     int ret;
-    printf("[sdk] [keystone.cpp] initiating UTM INIT ioctl call\n");
+    // printf("[sdk] [keystone.cpp] initiating UTM INIT ioctl call\n");
     ret = ioctl(fd, KEYSTONE_IOC_UTM_INIT, &enclp);
-    printf("[sdk] [keystone.cpp] finished ioctl call for UTM_INIT\n");
+    // printf("[sdk] [keystone.cpp] finished ioctl call for UTM_INIT\n");
     if (ret) {
-      printf("[sdk] [keystone.cpp] Error in initialization\n");
       ERROR("failed to init untrusted memory - ioctl() failed: %d", ret);
       destroy();
       return KEYSTONE_ERROR;
@@ -476,14 +473,12 @@ keystone_status_t Keystone::init(const char *eapppath, const char *runtimepath, 
 
     if (ret) {
       ERROR("failed to finalize enclave - ioctl() failed: %d", ret);
-      printf("[sdk] [keystone.cpp] Error in finalization\n");
       destroy();
       return KEYSTONE_ERROR;
     }
     if (mapUntrusted(params.getUntrustedSize()))
     {
       ERROR("failed to finalize enclave - cannot obtain the untrusted buffer pointer \n");
-      printf("[sdk] [keystone.cpp] cannot obtain the untrusted buffer pointer \n");
       destroy();
       return KEYSTONE_ERROR;
     }
@@ -502,7 +497,7 @@ keystone_status_t Keystone::mapUntrusted(size_t size)
   if (size == 0) {
     return KEYSTONE_SUCCESS;
   }
-  printf("[sdk] [keystone.cpp] mapUntrusted() called\n");
+  // printf("[sdk] [keystone.cpp] mapUntrusted() called\n");
   shared_buffer = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
   if (shared_buffer == NULL) {

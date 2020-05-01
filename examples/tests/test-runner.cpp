@@ -92,7 +92,7 @@ void print_usage(const char* argv0)
   std::cerr
     << argv0 << " [options] <enclave> <runtime>" << std::endl
     << std::endl
-    << "  --pf-handler <PF-HANDLER>   0 - simple, 1 - ORAM, 2 - OPAM, 3 - EPF (default=0)" << std::endl
+    << "  --pf-handler <PF-HANDLER>   0 - simple, 1 - ORAM, 2 - OPAM, 3 - EPF 4 - RORAM, 5 - WORAM (default=0)" << std::endl
     << "  --integrity <flag>          enable/disable integrity protection (default=0)" << std::endl
     << "  --confidentiality <flag>    enable/disable confidentiality (default=0)" << std::endl
     << "  --tracing <flag>              enable/disale tracing (default=0)" << std::endl
@@ -332,6 +332,11 @@ int main(int argc, char** argv)
     }
 
   }
+  else if(args_user.page_fault_handler==5)
+  {
+    printf("[testrunner] Write-only ORAM chosen as Page-fault handler\n");
+    p_arr=(pages *)malloc(190000*sizeof(pages));
+  }
 
   unsigned long long cycles1,cycles2,cycles3,cycles4;
 
@@ -340,7 +345,7 @@ int main(int argc, char** argv)
   Keystone enclave;
   Params params;
   // params.setUntrustedSize(4096*(1024));//32k 8 pages
-  params.setUntrustedSize(4096*(4096));
+  params.setUntrustedSize(4096*(4096)*2); //32MB
   params.setFreeMemSize(129660*1024);//129660
   // params.setFreeMemSize(4096*(129660-500+50000));//129660
   printf("[test-runner] UTM and Free Mem Size Set successfully\n");
