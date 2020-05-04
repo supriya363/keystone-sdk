@@ -10,6 +10,11 @@
 
 static int addr_data= 100;
 
+struct sample
+{
+  int values[1024];
+};
+
 void EAPP_ENTRY eapp_entry(){
 
   char* msg = "Hi! This is Supriya Suresh!";
@@ -34,13 +39,63 @@ void EAPP_ENTRY eapp_entry(){
   // ocall_get_string(&pkgstr,host_str);
   // ocall_print_buffer(host_str, pkgstr.size+1);
 
-  int *arr = malloc(2048 * sizeof(int));
-  for(int i=0; i<2048; i++)
+  // int *arr = malloc(2048 * 2048 * sizeof(int));
+  // for(int i=0; i<2048 * 2048; i++)
+  // {
+  //   // ocall_print_value((  unsigned long )i);
+  //   arr[i] = i;
+  // }
+
+  ocall_print_value(sizeof(struct sample));
+  struct sample *arr = malloc(10 * sizeof(struct sample));
+
+  //need only 7 write access to replace 1st page 
+  for(int i=0; i<10; i++)
   {
     ocall_print_value((  unsigned long )i);
-    arr[i] = i;
+    arr[i].values[0] = i*10;
   }
 
+  //fill holding area
+  arr[1].values[0] = 11; //arr[1] = 11 0x4000
+  arr[4].values[0] = 44; //arr[4] = 44 0x7000
+  arr[2].values[0] = 22; //0x5000
+  arr[3].values[0] = 33; //0x6000
+  arr[0].values[0] = 213; //0x6000
+  arr[7].values[0] = 48; //0x6000
+  arr[6].values[0] = 12; //0x6000
+  arr[1].values[0] = 89; //0x6000
 
+  ocall_print_value((  unsigned long )1);
+  int value = arr[1].values[0];
+  ocall_print_value((  unsigned long )value);
+
+  // for(int i=0; i<100; i++)
+  // {
+  //   // ocall_print_value((  unsigned long )i);
+  //   int value = arr[i].values[0];
+  //   if(value != i*10)
+  //     EAPP_RETURN(ret);
+  //   // ocall_print_value((  unsigned long )value);
+  // }
+  // for(int i=999; i>=800; i--)
+  // {
+  //   // ocall_print_value((  unsigned long )i);
+  //   int value = arr[i].values[0];
+  //   if(value != i*10)
+  //     EAPP_RETURN(ret);
+  //   // ocall_print_value((  unsigned long )value);
+  // }
+  // for(int i=5; i<300; i++)
+  // {
+  //   // ocall_print_value((  unsigned long )i);
+  //   int value = arr[i].values[0];
+  //   if(value != i*10)
+  //     EAPP_RETURN(ret);
+  //   // ocall_print_value((  unsigned long )value);
+  // }
+  
+  char *buf = "Success";
+  ocall_print_buffer (buf, 7);
   EAPP_RETURN(ret);
 }

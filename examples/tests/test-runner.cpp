@@ -348,13 +348,11 @@ int main(int argc, char** argv)
   params.setUntrustedSize(4096*(4096)*2); //32MB
   params.setFreeMemSize(129660*1024);//129660
   // params.setFreeMemSize(4096*(129660-500+50000));//129660
-  printf("[test-runner] UTM and Free Mem Size Set successfully\n");
   if( self_timing ){
     asm volatile ("rdcycle %0" : "=r" (cycles1));
   }
 
   enclave.init(argv[optind], argv[optind+1], params);
-  printf("[test-runner] enclav init successfully done\n");
   if( self_timing ){
     asm volatile ("rdcycle %0" : "=r" (cycles2));
   }
