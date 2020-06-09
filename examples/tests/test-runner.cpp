@@ -79,6 +79,7 @@ static struct option long_opts[] = {
   {"integrity", required_argument, NULL, 'i'      },
   {"confidentiality", required_argument, NULL, 'c'},
   {"free-pages", required_argument, NULL, 'p'     },
+  {"victim-cache", required_argument, NULL, 'v'   },
   {"tracing", required_argument, NULL, 't'        },
   {"debug", required_argument, NULL, 'd'        },
   {"file", required_argument, NULL, 'n'        },
@@ -95,6 +96,7 @@ void print_usage(const char* argv0)
     << "  --pf-handler <PF-HANDLER>   0 - simple, 1 - ORAM, 2 - OPAM, 3 - EPF 4 - RORAM, 5 - WORAM (default=0)" << std::endl
     << "  --integrity <flag>          enable/disable integrity protection (default=0)" << std::endl
     << "  --confidentiality <flag>    enable/disable confidentiality (default=0)" << std::endl
+    << "  --victim-cache <flag>    enable/disable victim cache (default=0)" << std::endl
     << "  --tracing <flag>              enable/disale tracing (default=0)" << std::endl
     << "  --debug <flag>              enable/disale debugging (default=0)" << std::endl
     << "  --file <file name>              file name to print details" << std::endl
@@ -125,9 +127,12 @@ int main(int argc, char** argv)
   //args_user[2] = 0;   // no confidentiality by default.
   args_user.confidentiality=0;
 
+  args_user.victim_cache=0;
 
   //args_user[3] = 10;  // number of free pages by default = 10
   args_user.num_free_pages=10;
+
+  args_user.confidentiality=0;
 
   //args_user[4] = 0;   // default is not tracing.
   args_user.page_addr_tracing=0;
@@ -140,7 +145,7 @@ int main(int argc, char** argv)
 
   int option_index, c;
   char fn[100];
-  while((c = getopt_long(argc, argv, "f:i:c:p:t:d:n:e:l:h",
+  while((c = getopt_long(argc, argv, "f:i:c:p:v:t:d:n:e:l:h",
                          long_opts, &option_index)) != -1)
   {
     switch(c) {
@@ -156,6 +161,8 @@ int main(int argc, char** argv)
       case 'p':
         args_user.num_free_pages = (int) atoi(optarg);
         break;
+      case 'v':
+        args_user.victim_cache = (uint8_t) atoi(optarg);
       case 't':
         args_user.page_addr_tracing = (uint8_t) atoi(optarg);
         break;
