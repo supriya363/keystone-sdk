@@ -122,17 +122,17 @@ int main(int argc, char** argv)
   args_user.page_fault_handler=PAGE_FAULT_HANDLER_SIMPLE;
 
   //args_user[1] = 0;   // no integrity protection by default.
-  args_user.integrity_protection=0;
+  args_user.integrity_protection=1;
 
   //args_user[2] = 0;   // no confidentiality by default.
-  args_user.confidentiality=0;
+  args_user.confidentiality=1;
 
   args_user.victim_cache=0;
 
   //args_user[3] = 10;  // number of free pages by default = 10
-  args_user.num_free_pages=10;
+  args_user.num_free_pages=15;
 
-  args_user.confidentiality=0;
+  args_user.confidentiality=1;
 
   //args_user[4] = 0;   // default is not tracing.
   args_user.page_addr_tracing=0;
