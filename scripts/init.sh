@@ -18,7 +18,7 @@ init_runtime() {
 
     case $1 in
       eyrie)
-        repo_url=https://github.com/NirjharRoy/keystone-runtime
+        repo_url=https://github.com/supriya363/keystone-runtime.git
         ;;
       sel4)
         repo_url=https://github.com/keystone-enclave/keystone-sel4
