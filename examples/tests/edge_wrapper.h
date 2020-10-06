@@ -73,4 +73,5 @@ typedef struct sat_struct
 const char* get_host_string();
 void roram_write_bucket_init(void* buffer);
 void roram_read_block(void* buffer);
+
 #endif /* _EDGE_WRAPPER_H_ */
