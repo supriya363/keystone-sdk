@@ -7,95 +7,68 @@
 #include "syscall.h"
 #include "malloc.h"
 #include "edge_wrapper.h"
+#include "printf.h"
 
-static int addr_data= 100;
-
-struct sample
+#define MAX 500
+#define LOOP 50000
+typedef struct Page
 {
   int values[1024];
-};
+} Page;
 
-void EAPP_ENTRY eapp_entry(){
+	
+void EAPP_ENTRY eapp_entry(){	
+	int i,k,data,num;num=9;data=9;num=num,data=data;
+        char* msg = "APP IS RUNNING"; //14
+	ocall_print_buffer(msg,14);
+	char* check = "cHECKING!\0";check=check;//10
+	char* success = "SUCCESS!\0";success=success;//9
+        char* failed = "FAILED!\0";failed=failed;//8
+	Page *dynamicpage = (Page*)malloc(MAX*sizeof(Page));
+	Page *staticpage = (Page*)malloc(MAX*sizeof(Page));
+	k=0;k=k;
+	
 
-  char* msg = "Hi! This is Supriya Suresh!";
-  unsigned long ret = 1;
-  // char *msg2 = "Address of test_value = ";
-  // char* msg2 = "Hi! This is message 2! Hello World";
-  // edge_data_t pkgstr;
+	for (i=0;i<MAX;i++){
+		for(k=0;k<1024;k++){
+			staticpage[i].values[k]=-1;
+			dynamicpage[i].values[k]=-1;
+		}
+	}
+	
+	for(i=0;i<LOOP;i++){
+		s_rand((unsigned long)&num, (unsigned long)sizeof(int));
+		num = num<0?(-1)*num:num;
+		num = num%MAX;
+		//num=i%MAX;
+		s_rand((unsigned long)&data, (unsigned long)sizeof(int));
+		data = data<0?(-1)*data:data;
+		data = data%1007;
+		if(i%500==0){
+			ocall_print_value(i);
+			ocall_print_buffer(check,10);
+		}
+		for(k=0;k<1024;k++){
+			staticpage[num].values[k]=(int)data;
+			dynamicpage[num].values[k]=(int)data;
+		}
+	}
+	ocall_print_buffer(check,10);
+//	staticpage[0].values[0]=0;  //THESE LINES ARE ADDEDD TO DELIBERATELY CAUSE A MATCHING FAILURE`
+//	dynamicpage[0].values[0]=1;
+	
+	for(i=0;i<MAX;i++){
+		for(k=0;k<1024;k++){
+			if(staticpage[i].values[k] != dynamicpage[i].values[k]){
+				ocall_print_buffer(failed,8);
+				ocall_print_value(i);
+				ocall_print_value(staticpage[i].values[k]);
+				ocall_print_value(dynamicpage[i].values[k]);
+				EAPP_RETURN(-1);
+			}
+		}
+	}
 
-  edge_init();
-
-  ocall_print_value((  unsigned long )addr_data);
-  // int test_value = 555;
-  ocall_print_buffer (msg, 27);
-  // ocall_print_value_test( (unsigned long) test_value);
-  // ret = ocall_print_buffer(msg, 22);
-  // ocall_print_value((  unsigned long )&addr_data);
-  // unsigned long ret = ocall_print_buffer(msg, 23);
-  
-  // ocall_print_buffer(msg2, 42);
-  // ocall_print_value(ret);
-  // void* host_str = malloc(56);
-  // ocall_get_string(&pkgstr,host_str);
-  // ocall_print_buffer(host_str, pkgstr.size+1);
-
-  // int *arr = malloc(2048 * 2048 * sizeof(int));
-  // for(int i=0; i<2048 * 2048; i++)
-  // {
-  //   // ocall_print_value((  unsigned long )i);
-  //   arr[i] = i;
-  // }
-
-  ocall_print_value(sizeof(struct sample));
-  struct sample *arr = malloc(10 * sizeof(struct sample));
-
-  //need only 7 write access to replace 1st page 
-  for(int i=0; i<10; i++)
-  {
-    ocall_print_value((  unsigned long )i);
-    arr[i].values[0] = i*10;
-  }
-
-  //fill holding area
-  arr[1].values[0] = 11; //arr[1] = 11 0x4000
-  arr[4].values[0] = 44; //arr[4] = 44 0x7000
-  arr[2].values[0] = 22; //0x5000
-  arr[3].values[0] = 33; //0x6000
-  arr[0].values[0] = 213; //0x6000
-  arr[7].values[0] = 48; //0x6000
-  arr[6].values[0] = 12; //0x6000
-  arr[1].values[0] = 89; //0x6000
-
-  ocall_print_value((  unsigned long )1);
-  int value = arr[1].values[0];
-  ocall_print_value((  unsigned long )value);
-
-  // for(int i=0; i<100; i++)
-  // {
-  //   // ocall_print_value((  unsigned long )i);
-  //   int value = arr[i].values[0];
-  //   if(value != i*10)
-  //     EAPP_RETURN(ret);
-  //   // ocall_print_value((  unsigned long )value);
-  // }
-  // for(int i=999; i>=800; i--)
-  // {
-  //   // ocall_print_value((  unsigned long )i);
-  //   int value = arr[i].values[0];
-  //   if(value != i*10)
-  //     EAPP_RETURN(ret);
-  //   // ocall_print_value((  unsigned long )value);
-  // }
-  // for(int i=5; i<300; i++)
-  // {
-  //   // ocall_print_value((  unsigned long )i);
-  //   int value = arr[i].values[0];
-  //   if(value != i*10)
-  //     EAPP_RETURN(ret);
-  //   // ocall_print_value((  unsigned long )value);
-  // }
-  
-  char *buf = "Success";
-  ocall_print_buffer (buf, 7);
-  EAPP_RETURN(ret);
+	ocall_print_buffer(success,9);
+	EAPP_RETURN(0);
 }
